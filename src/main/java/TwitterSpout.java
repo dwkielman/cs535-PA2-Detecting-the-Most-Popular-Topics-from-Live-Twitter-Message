@@ -71,7 +71,6 @@ public class TwitterSpout extends BaseRichSpout {
         _twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
         _twitterStream.addListener(listener);
         _twitterStream.sample();
-        //System.out.println("TwitterSprout completed initialization");
     }
 
     @Override
@@ -81,7 +80,6 @@ public class TwitterSpout extends BaseRichSpout {
         if (ret == null) {
             Utils.sleep(50);
         } else {
-            //System.out.println("TwitterSprout sending Status: " + ret.getText());
             _collector.emit(new Values(ret));
         }
     }

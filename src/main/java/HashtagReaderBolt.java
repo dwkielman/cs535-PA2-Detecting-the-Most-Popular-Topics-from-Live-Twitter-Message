@@ -15,7 +15,6 @@ public class HashtagReaderBolt implements IRichBolt {
     @Override
     public void prepare(Map conf, TopologyContext context, OutputCollector collector) {
         this.collector = collector;
-        //System.out.println("HashtagReaderBolt completed initialization");
     }
 
     @Override
@@ -23,7 +22,6 @@ public class HashtagReaderBolt implements IRichBolt {
         Status tweet = (Status) tuple.getValueByField("tweet");
         for(HashtagEntity hashtage : tweet.getHashtagEntities()) {
             String ht = hashtage.getText().toLowerCase().trim();
-            //System.out.println("HashtagReaderBolt sending Hashtag: " + ht);
             if (!ht.isEmpty()) {
                 this.collector.emit(tuple, new Values(ht));
                 this.collector.ack(tuple);

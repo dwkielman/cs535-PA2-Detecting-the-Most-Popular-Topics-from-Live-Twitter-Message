@@ -36,7 +36,7 @@ public class LogFileBolt extends BaseRichBolt {
         Date date = new Date(time);
 
         try {
-            System.out.println("Writing to the file " + outputPath);
+            //System.out.println("Writing to the file " + outputPath);
             FileWriter fw = new FileWriter(outputPath, true);
             BufferedWriter bw = new BufferedWriter(fw);
             String log = "<" + dateFormat.format(date) + ">" + tags;

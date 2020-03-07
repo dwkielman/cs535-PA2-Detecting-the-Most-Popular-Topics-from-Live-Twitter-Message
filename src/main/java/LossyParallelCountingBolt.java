@@ -1,3 +1,4 @@
+
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.OutputFieldsDeclarer;
@@ -10,7 +11,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class LossyCountingBolt extends BaseRichBolt {
+public class LossyParallelCountingBolt extends BaseRichBolt {
 
     private OutputCollector outputCollector;
     private static final long TIME_INTERVAL = 10000;
@@ -21,8 +22,10 @@ public class LossyCountingBolt extends BaseRichBolt {
     private static long currentStartTime;
     private double threshold;
     private double epsilon;
+    private static final String recordDelimiter = "##";
+    private static final String valueDelimiter = ":";
 
-    public LossyCountingBolt(double epsilon, double s) {
+    public LossyParallelCountingBolt(double epsilon, double s) {
         this.epsilon = epsilon;
         this.threshold = s;
         this.bucketWidth = (long) Math.ceil(1 / this.epsilon);
@@ -48,7 +51,6 @@ public class LossyCountingBolt extends BaseRichBolt {
             BucketObject bucketObject = bucket.get(hashtag);
             bucketObject.incrementFrequency();
             bucket.put(hashtag, bucketObject);
-            System.out.println("LossyCountingBolt bucket is currently of size: " + bucket.size());
         }
 
         // at each 10 seconds, need to submit the most recent bucket to the Log
@@ -60,9 +62,11 @@ public class LossyCountingBolt extends BaseRichBolt {
                 if (!entries.isEmpty()) {
                     List<String> output = new LinkedList<String>();
                     for (BucketObject bo : entries) {
-                        output.add("<" + bo.getHashtag() + " frequency: " + bo.getFrequency() + ">");
+                        output.add(bo.getHashtag() + valueDelimiter + bo.getFrequency());
                     }
-                    outputCollector.emit(tuple, new Values(output.toString(), currentTime));
+                    String outputWrite = String.join(recordDelimiter, output);
+
+                    outputCollector.emit(tuple, new Values(outputWrite));
                     outputCollector.ack(tuple);
                 }
             }
@@ -114,7 +118,7 @@ public class LossyCountingBolt extends BaseRichBolt {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        outputFieldsDeclarer.declare(new Fields("tags", "time"));
+        outputFieldsDeclarer.declare(new Fields("tags"));
     }
 
 }
