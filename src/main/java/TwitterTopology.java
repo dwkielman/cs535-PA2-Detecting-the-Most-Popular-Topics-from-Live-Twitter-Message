@@ -16,11 +16,11 @@ public class TwitterTopology {
 
         double epsilon =  0.002f;
         double threshold = -1;
-        int numberOfWorkers = 0;
+        int numberOfWorkers = 4;
         String outputPath = "/s/chopin/k/grad/dkielman/twitter/HashTags";
 
         if(args.length <= 0 || args.length > 5) {
-            System.out.println("ERROR: Usage is jar <parallel/non-parallel> <epsilon> [<threshold: default is -1> <output-path: default is twitter/HashTags> <number-of-workers: default is 1>]");
+            System.out.println("ERROR: Usage is jar <parallel/non-parallel> <epsilon> [<threshold: default is -1> <output-path: default is twitter/HashTags> <number-of-workers: default is 4>]");
             System.exit(0);
         }
 
